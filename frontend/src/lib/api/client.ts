@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 // Use environment variable or default to production URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app/api/auth';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -14,12 +14,9 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
       },
       withCredentials: true,
-      timeout: 15000, // Increased timeout to 15 seconds
-      xsrfCookieName: 'XSRF-TOKEN',
-      xsrfHeaderName: 'X-XSRF-TOKEN',
+      timeout: 15000,
     });
 
     // Add request interceptor
@@ -42,15 +39,31 @@ class ApiClient {
     // Add response interceptor
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
-        // Handle errors globally
+      (error: AxiosError) => {
+        // Handle CORS errors
+        if (error.code === 'ERR_NETWORK') {
+          console.error('Network Error:', error.message);
+          return Promise.reject(new Error('Unable to connect to the server. Please check your internet connection.'));
+        }
+
+        // Handle CORS issues
+        if (error.response?.status === 0) {
+          console.error('CORS Error:', error);
+          return Promise.reject(new Error('Cross-Origin Request Blocked. Please try again later.'));
+        }
+
+        // Handle 401 Unauthorized
         if (error.response?.status === 401) {
-          // Handle unauthorized access
           if (typeof window !== 'undefined') {
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            // Redirect to login page or show login modal
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
         }
+
+        // For other errors, pass through the error
         return Promise.reject(error);
       }
     );

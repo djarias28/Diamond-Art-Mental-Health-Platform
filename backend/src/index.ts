@@ -1,6 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -20,6 +19,7 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:3000',
   'https://diamond-art-therapy.vercel.app',
+  'https://diamond-art-therapy-server.vercel.app',
   'https://diamond-art-mental-health-platform.vercel.app'
 ];
 
@@ -31,21 +31,20 @@ app.use((req, res, next) => {
   if (origin && allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
       return res.status(200).end();
     }
   } else if (process.env.NODE_ENV === 'development') {
     // In development, allow any origin but don't set credentials
     res.header('Access-Control-Allow-Origin', origin || '*');
-    res.header('Access-Control-Allow-Credentials', 'false');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     
     if (req.method === 'OPTIONS') {
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
       return res.status(200).end();
     }
   } else {
@@ -53,6 +52,7 @@ app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
       return res.status(403).end();
     }
+    return res.status(403).json({ success: false, error: 'Not allowed by CORS' });
   }
   
   next();
