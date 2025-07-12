@@ -4,7 +4,9 @@ import app, { connectDB } from '../src/index';
 // List of allowed origins
 const allowedOrigins = [
   'https://diamond-art-therapy.vercel.app',
-  'http://localhost:3000' // for local development
+  'http://localhost:3000',
+  'https://diamond-art-therapy-server.vercel.app',
+  'https://diamond-art-mental-health-platform.vercel.app'
 ];
 
 // This is the Vercel serverless function handler
@@ -14,6 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Check if the request origin is in the allowed list
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (process.env.NODE_ENV === 'development') {
+    // In development, allow any origin
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
   
   // Set CORS headers
