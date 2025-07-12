@@ -19,9 +19,8 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://diamond-art-mental-health-platform.vercel.app', 
   'https://diamond-art-therapy.vercel.app',
-  'https://diamond-art-therapy.vercel.app'
+  'https://diamond-art-mental-health-platform.vercel.app',
 ];
 
 const corsOptions = {
@@ -30,15 +29,20 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn(`Blocked by CORS: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 };
 
 app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Routes
 app.use('/api/auth', authRoutes);

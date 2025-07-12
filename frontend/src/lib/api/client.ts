@@ -14,16 +14,18 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
-      withCredentials: true, // For cookies if using httpOnly cookies
+      withCredentials: true, // Important for cookies and CORS with credentials
     });
 
     // Add request interceptor
     this.client.interceptors.request.use(
       (config) => {
         // You can add auth tokens here if needed
-        const token = localStorage.getItem('token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('token');
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
         }
         return config;
       },
@@ -39,9 +41,8 @@ class ApiClient {
         // Handle errors globally
         if (error.response?.status === 401) {
           // Handle unauthorized access
-          localStorage.removeItem('token');
-          // Redirect to login or show login modal
           if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
             window.location.href = '/login';
           }
         }
@@ -58,7 +59,7 @@ class ApiClient {
   }
 
   public async get<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.client.get<T>(url, config);
+    return this.client.get<T>(url, { ...config, withCredentials: true });
   }
 
   public async post<T>(
@@ -66,7 +67,7 @@ class ApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse<T>> {
-    return this.client.post<T>(url, data, config);
+    return this.client.post<T>(url, data, { ...config, withCredentials: true });
   }
 
   public async put<T>(
@@ -74,11 +75,11 @@ class ApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse<T>> {
-    return this.client.put<T>(url, data, config);
+    return this.client.put<T>(url, data, { ...config, withCredentials: true });
   }
 
   public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.client.delete<T>(url, config);
+    return this.client.delete<T>(url, { ...config, withCredentials: true });
   }
 }
 
