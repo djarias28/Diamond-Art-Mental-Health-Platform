@@ -60,6 +60,24 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 
+// Root endpoint
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    message: 'Welcome to Diamond Art Therapy API',
+    status: 'running',
+    version: '1.0.0',
+    documentation: 'https://github.com/yourusername/diamond-art-therapy-backend#readme',
+    endpoints: {
+      health: '/api/health',
+      auth: {
+        login: '/api/auth/login',
+        register: '/api/auth/register',
+        // Add other auth endpoints as needed
+      }
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
