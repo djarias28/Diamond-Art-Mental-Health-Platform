@@ -38,6 +38,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { FiUser } from 'react-icons/fi';
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -203,8 +204,7 @@ export default function Navbar() {
             <>
               <Button size="sm" asChild>
                 <Link href="/signin" className="flex items-center gap-1">
-                  <LogIn className="w-4 h-4" />
-                  <span>SignIn/SignUp</span>
+                  <UserPlus className="w-4 h-4" />
                 </Link>
               </Button>
             </>
