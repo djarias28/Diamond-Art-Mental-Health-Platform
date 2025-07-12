@@ -41,10 +41,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Routes
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
-app.get('/api/v1/health', (req: Request, res: Response) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 
