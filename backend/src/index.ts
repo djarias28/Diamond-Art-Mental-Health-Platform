@@ -19,7 +19,8 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://diamond-art-mental-health-platform.vercel.app'
+  'https://diamond-art-mental-health-platform.vercel.app',
+  'https://diamond-art-therapy.vercel.app'
 ];
 
 const corsOptions = {
