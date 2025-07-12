@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Settings, User, Bell, Palette, Moon, Sun, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
@@ -10,11 +11,40 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'react-hot-toast';
+import { authService } from '@/lib/api/auth';
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string().min(8, 'Please confirm your password')
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function SettingsPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -82,33 +112,162 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="current-password" className="flex items-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  <span>Current Password</span>
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="current-password" 
-                    type={showPassword ? "text" : "password"} 
-                    className="pl-10 pr-10"
-                  />
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Lock className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <h3 className="font-medium">Password</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {showChangePassword ? 'Enter your current and new password' : 'Last changed 3 months ago'}
+                      </p>
+                    </div>
+                  </div>
                   <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="sm" 
-                    className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                    onClick={() => setShowPassword(!showPassword)}
+                    variant={showChangePassword ? "outline" : "default"}
+                    size="sm"
+                    onClick={() => setShowChangePassword(!showChangePassword)}
+                    className="gap-2"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="sr-only">{showPassword ? 'Hide' : 'Show'} password</span>
+                    <Lock className="w-4 h-4" />
+                    {showChangePassword ? 'Cancel' : 'Change Password'}
                   </Button>
                 </div>
+
+                {showChangePassword && (
+                  <div className="space-y-4 pl-4 sm:pl-8 border-l-2 border-blue-100 dark:border-blue-900">
+                    <div className="space-y-2">
+                      <Label htmlFor="current-password">Current Password</Label>
+                      <div className="relative">
+                        <Input 
+                          id="current-password" 
+                          type={showPassword ? "text" : "password"} 
+                          placeholder="Enter current password"
+                          className="pl-10 pr-10"
+                          {...register('currentPassword')}
+                        />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm" 
+                          className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">{showPassword ? 'Hide' : 'Show'} password</span>
+                        </Button>
+                      </div>
+                      {errors.currentPassword && (
+                        <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="new-password">New Password</Label>
+                      <div className="relative">
+                        <Input 
+                          id="new-password" 
+                          type={showNewPassword ? "text" : "password"} 
+                          placeholder="Enter new password"
+                          className="pl-10 pr-10"
+                          {...register('newPassword')}
+                        />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm" 
+                          className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">{showNewPassword ? 'Hide' : 'Show'} password</span>
+                        </Button>
+                      </div>
+                      {errors.newPassword && (
+                        <p className="text-sm text-red-500">{errors.newPassword.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm New Password</Label>
+                      <div className="relative">
+                        <Input 
+                          id="confirm-password" 
+                          type={showNewPassword ? "text" : "password"} 
+                          placeholder="Confirm new password"
+                          className="pl-10"
+                          {...register('confirmPassword')}
+                        />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      </div>
+                      {errors.confirmPassword && (
+                        <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2">
+                      <Button 
+                        variant="link" 
+                        className="h-auto p-0 text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 whitespace-nowrap"
+                        asChild
+                      >
+                        <Link href="/forgot-password">
+                          Forgot your password?
+                        </Link>
+                      </Button>
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <Button 
+                          type="button" 
+                          variant="outline"
+                          className="w-full sm:w-auto"
+                          onClick={() => {
+                            setShowChangePassword(false);
+                            reset();
+                          }}
+                          disabled={isUpdating}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          className="w-full sm:w-auto"
+                          disabled={isUpdating}
+                          onClick={handleSubmit(async (data) => {
+                            try {
+                              setIsUpdating(true);
+                              await authService.updatePassword(
+                                data.currentPassword,
+                                data.newPassword
+                              );
+                              toast.success('Password updated successfully');
+                              setShowChangePassword(false);
+                              reset();
+                            } catch (error: any) {
+                              console.error('Error updating password:', error);
+                              toast.error(error.response?.data?.message || 'Failed to update password', {
+                                duration: 5000,
+                              });
+                            } finally {
+                              setIsUpdating(false);
+                            }
+                          })}
+                        >
+                          {isUpdating ? 'Updating...' : 'Update Password'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Separator className="my-6" />

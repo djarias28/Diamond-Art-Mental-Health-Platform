@@ -122,6 +122,14 @@ export default function SignInPage() {
                     <p className="text-sm text-red-500">{errors.password.message}</p>
                   )}
                 </div>
+                <div className="flex justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
