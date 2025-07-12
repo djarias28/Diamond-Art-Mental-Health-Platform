@@ -35,7 +35,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="bg-primary hover:bg-primary/90 transition-colors">
-                <Link href={isAuthenticated ? "/activities" : "/signup"}>
+                <Link href={isAuthenticated ? "/design/create" : "/signup"}>
                   {isAuthenticated ? "Start Creating" : "Get Started"}
                 </Link>
               </Button>

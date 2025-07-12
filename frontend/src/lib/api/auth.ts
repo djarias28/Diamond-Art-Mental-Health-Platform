@@ -14,6 +14,13 @@ export interface UserPreferences {
   language?: string;
 }
 
+export interface UserStats {
+  streak: number;
+  totalPoints: number;
+  activitiesCompleted: number;
+  avgMoodImprovement: number;
+}
+
 export interface AuthResponse {
   token: string;
   user: User;
@@ -91,6 +98,16 @@ export const authService = {
     } catch (error) {
       console.error('Failed to update preferences:', error);
       throw new Error('Failed to update preferences');
+    }
+  },
+
+  async getUserStats(): Promise<UserStats> {
+    try {
+      const response = await apiClient.get<{ data: UserStats }>('/auth/stats');
+      return response.data.data;
+    } catch (error) {
+      console.error('Failed to fetch user stats:', error);
+      throw new Error('Failed to fetch user statistics');
     }
   },
 

@@ -1,107 +1,113 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
+"use client";
 
-export const metadata: Metadata = {
-  title: 'Dashboard | Diamond Art',
-  description: 'Your personal diamond art journey and progress tracker.',
-};
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { authService, UserStats } from '@/lib/api/auth';
+import { useAuth } from '@/providers/AuthProvider';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
-  // Mock data - in a real app, this would come from an API
-  const stats = [
-    { name: 'Total Projects', value: '12' },
-    { name: 'Hours Spent', value: '48' },
-    { name: 'Current Streak', value: '14 days' },
-  ];
+  const [stats, setStats] = useState<{
+    loading: boolean;
+    data: UserStats | null;
+    error: string | null;
+  }>({ loading: true, data: null, error: null });
+  
+  const { user } = useAuth();
 
-  const recentProjects = [
-    { id: 1, name: 'Ocean Waves', progress: 75 },
-    { id: 2, name: 'Mountain Sunset', progress: 30 },
-    { id: 3, name: 'Floral Mandala', progress: 10 },
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await authService.getUserStats();
+        setStats({ loading: false, data, error: null });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+        setStats({ 
+          loading: false, 
+          data: null, 
+          error: 'Failed to load dashboard data' 
+        });
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const statsData = [
+    { name: 'Current Streak', value: stats.data?.streak || 0, suffix: ' days' },
+    { name: 'Total Points', value: stats.data?.totalPoints || 0 },
+    { name: 'Activities Completed', value: stats.data?.activitiesCompleted || 0 },
+    { 
+      name: 'Mood Improvement', 
+      value: stats.data?.avgMoodImprovement || 0, 
+      suffix: ' points',
+      tooltip: 'Average mood improvement after activities'
+    },
   ];
 
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Welcome back, User</h1>
+        <h1 className="text-3xl font-bold">
+          Welcome back, {user?.name || 'User'}
+        </h1>
         <p className="text-muted-foreground">Here&apos;s your creative journey at a glance</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {stats.map((stat) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {statsData.map((stat) => (
           <div key={stat.name} className="glass-card p-6 rounded-xl">
-            <p className="text-sm font-medium text-muted-foreground">{stat.name}</p>
-            <p className="text-3xl font-bold mt-2">{stat.value}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              {stat.name}
+              {stat.tooltip && (
+                <span className="ml-2 text-xs text-muted-foreground" title={stat.tooltip}>
+                  ⓘ
+                </span>
+              )}
+            </p>
+            {stats.loading ? (
+              <Skeleton className="h-8 w-24 mt-2" />
+            ) : (
+              <p className="text-3xl font-bold mt-2">
+                {stat.value}
+                {stat.suffix}
+              </p>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Recent Projects */}
+      {/* Recent Activities */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold">Continue Working</h2>
+          <h2 className="text-2xl font-semibold">Recent Activities</h2>
           <Link href="/activities" className="text-sm text-primary hover:underline">
-            View all projects
+            View all activities
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentProjects.map((project) => (
-            <div key={project.id} className="glass-card p-6 rounded-xl">
-              <h3 className="text-lg font-medium mb-2">{project.name}</h3>
-              <div className="w-full bg-accent rounded-full h-2.5 mb-4">
-                <div 
-                  className="bg-primary h-2.5 rounded-full" 
-                  style={{ width: `${project.progress}%` }}
-                ></div>
-              </div>
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>{project.progress}% complete</span>
-                <Link href={`/projects/${project.id}`} className="text-primary hover:underline">
-                  Continue
-                </Link>
-              </div>
+        <div className="bg-card p-6 rounded-lg">
+          {stats.loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link 
-            href="/activities" 
-            className="glass-card p-6 rounded-xl hover:bg-accent/50 transition-colors"
-          >
-            <h3 className="font-medium">Start New Project</h3>
-            <p className="text-sm text-muted-foreground mt-1">Begin a new creative journey</p>
-          </Link>
-          
-          <Link 
-            href="/community" 
-            className="glass-card p-6 rounded-xl hover:bg-accent/50 transition-colors"
-          >
-            <h3 className="font-medium">Community Feed</h3>
-            <p className="text-sm text-muted-foreground mt-1">Get inspired by others</p>
-          </Link>
-          
-          <Link 
-            href="/dashboard/achievements" 
-            className="glass-card p-6 rounded-xl hover:bg-accent/50 transition-colors"
-          >
-            <h3 className="font-medium">My Achievements</h3>
-            <p className="text-sm text-muted-foreground mt-1">View your progress</p>
-          </Link>
-          
-          <Link 
-            href="/dashboard/settings" 
-            className="glass-card p-6 rounded-xl hover:bg-accent/50 transition-colors"
-          >
-            <h3 className="font-medium">Settings</h3>
-            <p className="text-sm text-muted-foreground mt-1">Customize your experience</p>
-          </Link>
+          ) : stats.data?.activitiesCompleted ? (
+            <p className="text-muted-foreground">
+              You&apos;ve completed {stats.data.activitiesCompleted} activities so far!
+              {stats.data.avgMoodImprovement > 0 && (
+                <span className="block mt-2 text-green-500">
+                  Your mood has improved by an average of {stats.data.avgMoodImprovement} points per activity!
+                </span>
+              )}
+            </p>
+          ) : (
+            <p className="text-muted-foreground">
+              No activities completed yet. Start your first activity to see your progress here!
+            </p>
+          )}
         </div>
       </div>
     </main>
