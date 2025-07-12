@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
-// Use environment variable or default to production URL
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app') + '/api';
+// Base URL without any path
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -11,12 +11,12 @@ class ApiClient {
   private constructor() {
     this.client = axios.create({
       baseURL: API_BASE_URL,
+      withCredentials: true,
+      timeout: 15000,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      withCredentials: true,
-      timeout: 15000,
     });
 
     // Add request interceptor
@@ -27,6 +27,11 @@ class ApiClient {
           const token = localStorage.getItem('token');
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+          }
+          
+          // Ensure all API requests go to /api
+          if (config.url && !config.url.startsWith('http')) {
+            config.url = `/api${config.url.startsWith('/') ? '' : '/'}${config.url}`;
           }
         }
         return config;
