@@ -59,7 +59,17 @@ app.get('/', (req: Request, res: Response) => {
       auth: {
         login: '/api/auth/login',
         register: '/api/auth/register',
-        // Add other auth endpoints as needed
+        me: '/api/auth/me',
+        forgotPassword: '/api/auth/forgotpassword',
+        resetPassword: '/api/auth/resetpassword/:token',
+        updateDetails: '/api/auth/updatedetails',
+        updatePassword: '/api/auth/updatepassword',
+        preferences: '/api/auth/preferences',
+        stats: '/api/auth/stats',
+        activities: {
+          complete: '/api/auth/activities/complete',
+          history: '/api/auth/activities/history'
+        }
       }
     }
   });

@@ -66,8 +66,8 @@ export const authService = {
 
   logout(): void {
     localStorage.removeItem('token');
-    // Redirect to login page
-    window.location.href = '/signin';
+    // Optionally call a logout endpoint if you have one
+    // await apiClient.post('/auth/logout');
   },
 
   isAuthenticated(): boolean {
