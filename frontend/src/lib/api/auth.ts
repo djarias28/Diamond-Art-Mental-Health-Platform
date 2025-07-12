@@ -30,7 +30,7 @@ export interface RegisterData extends LoginCredentials {
 
 export const authService = {
   async register(userData: RegisterData): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/register', userData);
+    const response = await apiClient.post<AuthResponse>('/register', userData);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
     }
@@ -38,7 +38,7 @@ export const authService = {
   },
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
+    const response = await apiClient.post<AuthResponse>('/login', credentials);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
     }
@@ -46,28 +46,28 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<{ data: User }>('/auth/me');
+    const response = await apiClient.get<{ data: User }>('/me');
     return response.data.data;
   },
 
   async updateUserDetails(userData: Partial<User>): Promise<User> {
-    const response = await apiClient.put<{ data: User }>('/auth/updatedetails', userData);
+    const response = await apiClient.put<{ data: User }>('/updatedetails', userData);
     return response.data.data;
   },
 
   async updatePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await apiClient.put('/auth/updatepassword', { currentPassword, newPassword });
+    await apiClient.put('/updatepassword', { currentPassword, newPassword });
   },
 
   async updatePreferences(preferences: UserPreferences): Promise<User> {
-    const response = await apiClient.put<{ data: User }>('/auth/preferences', { preferences });
+    const response = await apiClient.put<{ data: User }>('/preferences', { preferences });
     return response.data.data;
   },
 
   logout(): void {
     localStorage.removeItem('token');
     // Optionally call a logout endpoint if you have one
-    // await apiClient.post('/auth/logout');
+    // await apiClient.post('/logout');
   },
 
   isAuthenticated(): boolean {
@@ -75,10 +75,10 @@ export const authService = {
   },
 
   async forgotPassword(email: string): Promise<void> {
-    await apiClient.post('/auth/forgotpassword', { email });
+    await apiClient.post('/forgotpassword', { email });
   },
 
   async resetPassword(token: string, password: string): Promise<void> {
-    await apiClient.put(`/auth/resetpassword/${token}`, { password });
+    await apiClient.put(`/resetpassword/${token}`, { password });
   },
 };
