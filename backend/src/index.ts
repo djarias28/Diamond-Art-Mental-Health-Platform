@@ -19,7 +19,8 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://diamond-art-mental-health-platform.vercel.app',
+  'https://diamond-art-mental-health-platform.vercel.app', 
+  'https://diamond-art-therapy.vercel.app',
   'https://diamond-art-therapy.vercel.app'
 ];
 
@@ -40,10 +41,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/v1/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 
