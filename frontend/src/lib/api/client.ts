@@ -2,7 +2,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 // Use environment variable or default to production URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app') + '/api';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -14,9 +14,6 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
       withCredentials: true,
       timeout: 15000,
