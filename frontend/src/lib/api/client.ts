@@ -13,14 +13,17 @@ class ApiClient {
       baseURL: API_BASE_URL,
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
       },
-      withCredentials: true, // Important for cookies and CORS with credentials
+      withCredentials: true,
+      timeout: 10000 // 10 seconds
     });
 
     // Add request interceptor
     this.client.interceptors.request.use(
       (config) => {
-        // You can add auth tokens here if needed
+        // Only run in browser environment
         if (typeof window !== 'undefined') {
           const token = localStorage.getItem('token');
           if (token) {
