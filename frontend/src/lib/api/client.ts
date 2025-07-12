@@ -17,7 +17,9 @@ class ApiClient {
         'X-Requested-With': 'XMLHttpRequest'
       },
       withCredentials: true,
-      timeout: 10000 // 10 seconds
+      timeout: 15000, // Increased timeout to 15 seconds
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
     });
 
     // Add request interceptor
@@ -61,28 +63,20 @@ class ApiClient {
     return ApiClient.instance;
   }
 
-  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.client.get<T>(url, { ...config, withCredentials: true });
+  public async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.client.get<T>(url, config);
   }
 
-  public async post<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.client.post<T>(url, data, { ...config, withCredentials: true });
+  public async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.client.post<T>(url, data, config);
   }
 
-  public async put<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.client.put<T>(url, data, { ...config, withCredentials: true });
+  public async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.client.put<T>(url, data, config);
   }
 
-  public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.client.delete<T>(url, { ...config, withCredentials: true });
+  public async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.client.delete<T>(url, config);
   }
 }
 
