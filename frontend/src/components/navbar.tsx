@@ -201,16 +201,10 @@ export default function Navbar() {
           {/* Auth Buttons - Only show when not authenticated */}
           {!isAuthenticated && !isAuthPage && (
             <>
-              <Button variant="outline" size="sm" asChild>
+              <Button size="sm" asChild>
                 <Link href="/signin" className="flex items-center gap-1">
                   <LogIn className="w-4 h-4" />
-                  <span>Sign In</span>
-                </Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/signup" className="flex items-center gap-1">
-                  <UserPlus className="w-4 h-4" />
-                  <span>Sign Up</span>
+                  <span>SignIn/SignUp</span>
                 </Link>
               </Button>
             </>
