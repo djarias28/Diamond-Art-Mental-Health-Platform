@@ -36,3 +36,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
+// Add this to make it work with Vercel's serverless functions
+module.exports = handler;
