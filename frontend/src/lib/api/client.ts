@@ -2,7 +2,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 // Use environment variable or default to production URL
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app') + '/api';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://diamond-art-therapy-server.vercel.app');
 
 class ApiClient {
   private client: AxiosInstance;

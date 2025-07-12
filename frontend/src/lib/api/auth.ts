@@ -31,7 +31,7 @@ export interface RegisterData extends LoginCredentials {
 export const authService = {
   async register(userData: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/register', userData);
+      const response = await apiClient.post<AuthResponse>('/auth/register', userData);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -44,7 +44,7 @@ export const authService = {
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/login', credentials);
+      const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -57,7 +57,7 @@ export const authService = {
 
   async getCurrentUser(): Promise<User> {
     try {
-      const response = await apiClient.get<{ data: User }>('/api/auth/me');
+      const response = await apiClient.get<{ data: User }>('/auth/me');
       return response.data.data;
     } catch (error) {
       console.error('Failed to fetch user:', error);
@@ -67,7 +67,7 @@ export const authService = {
 
   async updateUserDetails(userData: Partial<User>): Promise<User> {
     try {
-      const response = await apiClient.put<{ data: User }>('/api/auth/updatedetails', userData);
+      const response = await apiClient.put<{ data: User }>('/auth/updatedetails', userData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to update user details:', error);
@@ -77,7 +77,7 @@ export const authService = {
 
   async updatePassword(currentPassword: string, newPassword: string): Promise<void> {
     try {
-      await apiClient.put('/api/auth/updatepassword', { currentPassword, newPassword });
+      await apiClient.put('/auth/updatepassword', { currentPassword, newPassword });
     } catch (error) {
       console.error('Password update error:', error);
       throw new Error('Failed to update password');
@@ -86,7 +86,7 @@ export const authService = {
 
   async updatePreferences(preferences: UserPreferences): Promise<User> {
     try {
-      const response = await apiClient.put<{ data: User }>('/api/auth/preferences', { preferences });
+      const response = await apiClient.put<{ data: User }>('/auth/preferences', { preferences });
       return response.data.data;
     } catch (error) {
       console.error('Failed to update preferences:', error);
@@ -97,7 +97,7 @@ export const authService = {
   logout(): void {
     try {
       // Call the logout endpoint
-      apiClient.get('/api/auth/logout').catch(console.error);
+      apiClient.get('/auth/logout').catch(console.error);
     } finally {
       // Always clear local storage and redirect
       localStorage.removeItem('token');
@@ -112,7 +112,7 @@ export const authService = {
 
   async forgotPassword(email: string): Promise<void> {
     try {
-      await apiClient.post('/api/auth/forgotpassword', { email });
+      await apiClient.post('/auth/forgotpassword', { email });
     } catch (error) {
       console.error('Forgot password error:', error);
       throw new Error('Failed to send password reset email');
@@ -121,7 +121,7 @@ export const authService = {
 
   async resetPassword(token: string, password: string): Promise<void> {
     try {
-      await apiClient.put(`/api/auth/resetpassword/${token}`, { password });
+      await apiClient.put(`/auth/resetpassword/${token}`, { password });
     } catch (error) {
       console.error('Reset password error:', error);
       throw new Error('Failed to reset password');
