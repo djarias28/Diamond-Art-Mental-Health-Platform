@@ -7,7 +7,7 @@ import path from 'path';
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// Import routes
+// Import routes 
 import authRoutes from './routes/auth';
 
 // Initialize express
