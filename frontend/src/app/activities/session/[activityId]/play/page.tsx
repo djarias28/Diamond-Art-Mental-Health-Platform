@@ -316,11 +316,11 @@ export default function DiamondArtPlayPage() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <Link 
-            href={`/activities/session/${activity.id}`}
+            href={`/activities/mood/${activity.mood}`}
             className="flex items-center text-primary hover:underline dark:text-blue-400"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            <span className="dark:text-white">Back to Activity</span>
+            <span className="dark:text-white">Back to Mood Activities</span>
           </Link>
           
           <div className="flex items-center space-x-4">

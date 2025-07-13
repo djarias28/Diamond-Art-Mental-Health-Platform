@@ -40,7 +40,7 @@ export default function MoodActivitiesClient({ mood }: MoodActivitiesClientProps
     console.log(`Starting activity: ${activityId}`);
     
     // Navigate to the activity session page
-    router.push(`/activities/session/${activityId}`);
+    router.push(`/activities/session/${activityId}/play`);
   };
 
   return (
