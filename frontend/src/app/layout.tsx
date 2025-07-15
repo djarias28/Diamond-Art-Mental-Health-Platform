@@ -3,7 +3,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/providers/AuthProvider';
