@@ -7,7 +7,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/providers/AuthProvider';
-
+ 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
